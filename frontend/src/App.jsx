@@ -109,7 +109,7 @@ export default function App() {
 
           {/* Minimalist Footer */}
           <footer className="text-center mt-12 text-zinc-600 text-xs font-mono">
-            Fine-Tuned GPT-2 Medium · Hugging Face ZeroGPU
+            AI Joke Generator
           </footer>
         </div>
       </main>
