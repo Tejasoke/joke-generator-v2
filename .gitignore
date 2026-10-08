@@ -1,0 +1,33 @@
+# Environments & Virtualenv
+.venv/
+venv/
+env/
+ENV/
+
+# Python cache & artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Large Model weights & training datasets (avoid GitHub >100MB limit)
+fine-tuned-gpt2/
+*.safetensors
+*.bin
+*.pt
+*.csv
+
+# Node & Frontend builds
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# OS & IDE
+.DS_Store
+.idea/
+.vscode/
+
+# Vercel & Deployment
+.vercel

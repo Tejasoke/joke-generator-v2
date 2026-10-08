@@ -1,0 +1,9 @@
+.venv
+fine-tuned-gpt2
+*.csv
+*.safetensors
+Datapreprocessing.ipynb
+audit_jokes.*
+test_quality_fix.py
+Dockerfile
+.DS_Store

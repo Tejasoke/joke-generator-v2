@@ -1,0 +1,80 @@
+/* ── Tailwind v4 entry point ─────────────────────────────── */
+@import "tailwindcss";
+
+/* ── Google Fonts ────────────────────────────────────────── */
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
+@import "@fontsource/space-grotesk/500.css";
+@import "@fontsource/space-grotesk/700.css";
+
+/* ── Custom Design Tokens (@theme replaces tailwind.config.js) ── */
+@theme {
+  --color-bg-primary:    #0a0a0f;
+  --color-bg-card:       rgba(20, 20, 35, 0.85);
+  --color-bg-input:      rgba(255, 255, 255, 0.04);
+  --color-border:        rgba(255, 255, 255, 0.08);
+  --color-accent-purple: #8b5cf6;
+  --color-accent-orange: #f97316;
+  --color-accent-amber:  #f59e0b;
+  --color-accent-warm:   #ea580c;
+  --color-accent-cyan:   #06b6d4;
+  --color-text-primary:  #f1f5f9;
+  --color-text-muted:    #64748b;
+
+  --font-family-sans:    'Inter', system-ui, sans-serif;
+  --font-family-display: 'Space Grotesk', system-ui, sans-serif;
+
+  --animate-float:       float 12s ease-in-out infinite;
+  --animate-slide-up:    slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --animate-pop:         pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --animate-blink:       blink 0.8s steps(1) infinite;
+}
+
+/* ── Global base ─────────────────────────────────────────── */
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-family-sans);
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+}
+
+/* ── Keyframe animations ─────────────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(30px, -30px) scale(1.05); }
+  66%       { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes pop {
+  from { transform: scale(0); }
+  to   { transform: scale(1); }
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+/* ── Streaming cursor ────────────────────────────────────── */
+.cursor-blink {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  background-color: var(--color-accent-orange);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: blink 0.8s steps(1) infinite;
+}

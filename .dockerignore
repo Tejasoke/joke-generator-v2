@@ -1,0 +1,8 @@
+.venv
+frontend/node_modules
+frontend/dist
+__pycache__
+*.csv
+.git
+.gitignore
+fine-tuned-gpt2
