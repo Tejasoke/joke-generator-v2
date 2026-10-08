@@ -49,32 +49,32 @@ export default function App() {
   }, [handleGenerate])
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#07070d] bg-grid-pattern relative overflow-x-hidden selection:bg-orange-500/30 selection:text-orange-200">
 
-      {/* ── Animated background orbs ── */}
+      {/* ── Ambient background glow (optimized for mobile) ── */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        <div className="absolute -top-48 -left-48 w-[600px] h-[600px] rounded-full
-                        bg-orange-600 opacity-15 blur-[90px]"
-             style={{ animation: 'float 12s ease-in-out infinite' }} />
-        <div className="absolute -bottom-24 -right-24 w-96 h-96 rounded-full
-                        bg-amber-500 opacity-15 blur-[90px]"
-             style={{ animation: 'float 12s ease-in-out infinite 4s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-                        w-72 h-72 rounded-full bg-red-500 opacity-10 blur-[90px]"
-             style={{ animation: 'float 12s ease-in-out infinite 8s' }} />
+        <div className="absolute -top-32 -left-32 w-72 sm:w-[500px] h-72 sm:h-[500px] rounded-full
+                        bg-orange-600/15 blur-[80px] sm:blur-[100px]"
+             style={{ animation: 'float 14s ease-in-out infinite' }} />
+        <div className="absolute top-1/3 -right-32 w-64 sm:w-96 h-64 sm:h-96 rounded-full
+                        bg-purple-600/10 blur-[80px] sm:blur-[100px]"
+             style={{ animation: 'float 14s ease-in-out infinite 5s' }} />
+        <div className="absolute -bottom-20 left-1/4 w-60 sm:w-80 h-60 sm:h-80 rounded-full
+                        bg-amber-500/10 blur-[80px] sm:blur-[90px]"
+             style={{ animation: 'float 14s ease-in-out infinite 9s' }} />
       </div>
 
       {/* ── Page content ── */}
       <main className="relative z-10 flex flex-col items-center
-                       px-5 py-14 pb-24 min-h-screen">
-        <div className="w-full max-w-xl">
+                       px-3.5 sm:px-6 py-6 sm:py-14 pb-20 sm:pb-24 min-h-screen">
+        <div className="w-full max-w-xl mx-auto">
 
           <Header />
 
           {/* Alert with Lucide icon */}
           {alert && (
-            <div className={`mb-4 px-4 py-3.5 rounded-xl text-sm font-medium
-                             border flex items-center gap-2.5
+            <div className={`mb-4 px-3.5 py-3 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-medium
+                             border flex items-center gap-2.5 backdrop-blur-md
                              ${alert.type === 'error'
                                ? 'bg-rose-500/10 border-rose-500/30 text-rose-300'
                                : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
@@ -91,8 +91,8 @@ export default function App() {
           )}
 
           {/* Form card */}
-          <div className="bg-white/[0.05] backdrop-blur-xl border border-white/[0.08]
-                          rounded-3xl p-6 sm:p-8 shadow-2xl shadow-black/60 mb-6">
+          <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.09]
+                          rounded-2xl sm:rounded-3xl p-4 sm:p-7 shadow-2xl shadow-black/70 mb-4 sm:mb-6">
             <TopicInput
               value={topic}
               onChange={setTopic}
@@ -124,8 +124,8 @@ export default function App() {
           />
 
           {/* Footer */}
-          <footer className="text-center mt-8 text-slate-600 text-xs">
-            Powered by fine-tuned GPT-2 Medium · FastAPI backend
+          <footer className="text-center mt-8 sm:mt-12 text-slate-500 text-[11px] sm:text-xs">
+            Powered by Fine-Tuned GPT-2 Medium · Served on Hugging Face ZeroGPU
           </footer>
         </div>
       </main>
