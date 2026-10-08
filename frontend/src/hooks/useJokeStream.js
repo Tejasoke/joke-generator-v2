@@ -1,17 +1,10 @@
 import { useState, useCallback } from 'react'
-import { generateJokeStream } from '../api/jokeApi'
+import { generateJokeStream, generateJoke } from '../api/jokeApi'
 
 /**
- * Custom hook that manages the entire SSE streaming lifecycle.
- *
- * Returns:
- *   streamingText  — live token-by-token text being built
- *   finalJoke      — fully post-processed joke (set on [done] event)
- *   reaction       — emoji reaction (set on [done] event)
- *   isLoading      — true while model is generating
- *   error          — error string or null
- *   startStream    — function({ topic, style, strictMode }) to kick off generation
- *   reset          — clears all state
+ * Custom hook that manages the joke generation lifecycle.
+ * Automatically attempts real-time streaming, and falls back to standard
+ * JSON generation if streaming is not supported (HTTP 405/404).
  */
 export function useJokeStream() {
   const [streamingText, setStreamingText] = useState('')
@@ -32,7 +25,29 @@ export function useJokeStream() {
     setIsLoading(true)
 
     try {
-      const response = await generateJokeStream({ topic, style, strictMode })
+      let isStreamSupported = true
+      let response = null
+
+      try {
+        response = await generateJokeStream({ topic, style, strictMode })
+      } catch (streamErr) {
+        // If 405 (Method Not Allowed) or 404 (Not Found), fallback to /api/generate
+        if (streamErr.status === 405 || streamErr.status === 404) {
+          isStreamSupported = false
+        } else {
+          throw streamErr
+        }
+      }
+
+      // Fallback: Use standard /api/generate endpoint
+      if (!isStreamSupported) {
+        const data = await generateJoke({ topic, style, strictMode })
+        setFinalJoke(data.joke)
+        setReaction(data.reaction || '😂')
+        return
+      }
+
+      // Stream handling for SSE
       const reader   = response.body.getReader()
       const decoder  = new TextDecoder()
       let buffer = ''
@@ -41,12 +56,9 @@ export function useJokeStream() {
         const { done, value } = await reader.read()
         if (done) break
 
-        // Decode the chunk and append to buffer
         buffer += decoder.decode(value, { stream: true })
-
-        // SSE messages are separated by double newlines
         const parts = buffer.split('\n\n')
-        buffer = parts.pop()  // incomplete trailing chunk
+        buffer = parts.pop()
 
         for (const part of parts) {
           if (!part.startsWith('data: ')) continue
@@ -55,12 +67,10 @@ export function useJokeStream() {
             const payload = JSON.parse(part.slice(6))
 
             if (payload.done) {
-              // Final processed joke from backend
               setFinalJoke(payload.joke)
               setReaction(payload.reaction)
-              setStreamingText('')  // clear raw stream, show final
+              setStreamingText('')
             } else if (payload.token) {
-              // Append token to live display
               setStreamingText(prev => prev + payload.token)
             }
           } catch (e) {

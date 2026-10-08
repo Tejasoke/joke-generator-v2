@@ -21,7 +21,9 @@ export async function generateJoke({ topic, style, strictMode, numSequences = 5 
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
-    throw new Error(err.detail || 'Generation failed')
+    const error = new Error(err.detail || 'Generation failed')
+    error.status = res.status
+    throw error
   }
 
   return res.json()
@@ -44,7 +46,9 @@ export async function generateJokeStream({ topic, style, strictMode }) {
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
-    throw new Error(err.detail || 'Stream failed')
+    const error = new Error(err.detail || `Stream failed with HTTP ${res.status}`)
+    error.status = res.status
+    throw error
   }
 
   return res
