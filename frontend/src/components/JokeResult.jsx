@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Copy, Check, RotateCcw, CheckCircle2, MessageSquare, Share2, Sparkles } from 'lucide-react'
+import { Copy, Check, RotateCcw, Share2 } from 'lucide-react'
 
-export default function JokeResult({ streamingText, finalJoke, reaction, isLoading }) {
+export default function JokeResult({ streamingText, finalJoke, isLoading }) {
   const [copied, setCopied] = useState(false)
   const [shared, setShared] = useState(false)
 
@@ -9,7 +9,6 @@ export default function JokeResult({ streamingText, finalJoke, reaction, isLoadi
 
   const displayText = finalJoke ?? streamingText
 
-  // Parse Setup & Punchline if formatted
   let setupText = null
   let punchlineText = null
 
@@ -36,17 +35,16 @@ export default function JokeResult({ streamingText, finalJoke, reaction, isLoadi
 
   async function handleShare() {
     if (!displayText) return
-    const shareData = {
-      title: 'AI Joke Generator',
-      text: displayText,
-      url: window.location.href,
-    }
     if (navigator.share) {
       try {
-        await navigator.share(shareData)
+        await navigator.share({
+          title: 'Joke Generator',
+          text: displayText,
+          url: window.location.href,
+        })
         return
       } catch (err) {
-        // User cancelled or share failed, fallback to copy
+        // Fallback to copy
       }
     }
     handleCopy()
@@ -56,141 +54,93 @@ export default function JokeResult({ streamingText, finalJoke, reaction, isLoadi
 
   return (
     <div
-      className="mt-6 bg-white/[0.05] backdrop-blur-2xl
-                 border border-orange-500/30 rounded-2xl sm:rounded-3xl p-4 sm:p-7
-                 shadow-2xl shadow-black/60 relative overflow-hidden"
-      style={{ animation: 'slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+      className="mt-5 bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-xl"
       role="region"
       aria-label="Generated joke"
       aria-live="polite"
     >
-      {/* Top ambient glow */}
-      <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-48 h-24 bg-orange-500/20 blur-2xl pointer-events-none" />
-
-      {/* Header bar */}
-      <div className="flex items-center justify-between gap-3 mb-4 sm:mb-5 pb-3 sm:pb-4 border-b border-white/[0.08]">
-        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-orange-500/15 border border-orange-500/30
-                          flex items-center justify-center shrink-0 shadow-inner">
-            {reaction ? (
-              <span className="text-lg sm:text-2xl animate-bounce" role="img" aria-label="Reaction">
-                {reaction}
-              </span>
-            ) : (
-              <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-orange-400 animate-pulse" />
-            )}
-          </div>
-
-          <div className="min-w-0">
-            <p className="text-slate-100 font-bold text-xs sm:text-sm truncate">
-              {finalJoke ? "Here's your joke!" : 'AI is crafting your joke...'}
-            </p>
-            <p className="text-slate-400 text-[11px] sm:text-xs truncate">
-              {finalJoke ? 'Fine-tuned GPT-2' : 'Streaming live tokens...'}
-            </p>
-          </div>
-        </div>
-
+      {/* Top Header */}
+      <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b border-zinc-800/80">
+        <span className="text-xs font-mono uppercase tracking-wider text-zinc-400">
+          {finalJoke ? 'Output' : 'Generating...'}
+        </span>
         {finalJoke && (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase
-                           tracking-wider bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 shrink-0">
-            <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-            <span>Ready</span>
+          <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            Complete
           </span>
         )}
       </div>
 
-      {/* Joke Content Display */}
+      {/* Joke Display */}
       {setupText && punchlineText ? (
-        <div className="space-y-3 sm:space-y-4 my-2">
-          {/* Setup block */}
-          <div className="p-3.5 sm:p-4 rounded-xl bg-white/[0.03] border border-white/[0.07]">
-            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-orange-400/90 block mb-1">
-              Setup
-            </span>
-            <p className="font-display text-base sm:text-lg text-slate-100 leading-snug">
-              {setupText}
-            </p>
+        <div className="space-y-3 my-2">
+          <div className="text-sm sm:text-base text-zinc-300 leading-relaxed">
+            {setupText}
           </div>
-
-          {/* Punchline block */}
-          <div className="p-3.5 sm:p-4 rounded-xl bg-gradient-to-r from-orange-500/15 to-amber-500/10 border border-orange-500/30">
-            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-amber-300 block mb-1 flex items-center gap-1">
-              <Sparkles className="w-3 h-3 text-amber-300" />
-              Punchline
-            </span>
-            <p className="font-display text-base sm:text-xl font-bold text-amber-100 leading-snug">
-              {punchlineText}
-            </p>
+          <div className="pt-2 text-base sm:text-lg text-white font-medium leading-relaxed border-t border-zinc-850">
+            {punchlineText}
           </div>
         </div>
       ) : (
-        <div className="p-3 sm:p-4 rounded-xl bg-white/[0.02]">
-          <p className="font-display text-base sm:text-xl leading-relaxed text-slate-100 whitespace-pre-line">
-            {displayText}
-            {!finalJoke && <span className="cursor-blink" aria-hidden="true" />}
-          </p>
-        </div>
+        <p className="text-sm sm:text-base text-zinc-100 leading-relaxed whitespace-pre-line py-1">
+          {displayText}
+          {!finalJoke && <span className="cursor-blink" aria-hidden="true" />}
+        </p>
       )}
 
-      {/* Action buttons (Mobile-first responsive row) */}
+      {/* Action Row */}
       {finalJoke && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-2.5 mt-5 pt-4 border-t border-white/[0.08]">
-          {/* Copy button */}
+        <div className="flex items-center justify-end gap-2 mt-5 pt-3.5 border-t border-zinc-800/80">
           <button
             type="button"
             onClick={handleCopy}
-            className="inline-flex items-center justify-center gap-1.5 py-2.5 sm:py-3 px-3 text-xs sm:text-sm font-semibold
-                       bg-white/[0.05] border border-white/[0.1] rounded-xl text-slate-200
-                       hover:text-white hover:border-orange-500/50 hover:bg-orange-500/15
-                       active:scale-[0.98] transition-all duration-150 cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono
+                       bg-zinc-800/70 border border-zinc-700/60 text-zinc-300 hover:text-white hover:bg-zinc-700
+                       transition-colors cursor-pointer"
           >
             {copied ? (
               <>
-                <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" />
-                <span className="text-emerald-400">Copied!</span>
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-emerald-400">Copied</span>
               </>
             ) : (
               <>
-                <Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400" />
+                <Copy className="w-3.5 h-3.5 text-zinc-400" />
                 <span>Copy</span>
               </>
             )}
           </button>
 
-          {/* Share button */}
           <button
             type="button"
             onClick={handleShare}
-            className="inline-flex items-center justify-center gap-1.5 py-2.5 sm:py-3 px-3 text-xs sm:text-sm font-semibold
-                       bg-white/[0.05] border border-white/[0.1] rounded-xl text-slate-200
-                       hover:text-white hover:border-orange-500/50 hover:bg-orange-500/15
-                       active:scale-[0.98] transition-all duration-150 cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono
+                       bg-zinc-800/70 border border-zinc-700/60 text-zinc-300 hover:text-white hover:bg-zinc-700
+                       transition-colors cursor-pointer"
           >
             {shared ? (
               <>
-                <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" />
-                <span className="text-emerald-400">Shared!</span>
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-emerald-400">Shared</span>
               </>
             ) : (
               <>
-                <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400" />
+                <Share2 className="w-3.5 h-3.5 text-zinc-400" />
                 <span>Share</span>
               </>
             )}
           </button>
 
-          {/* Again button (col-span-2 on mobile, single on desktop) */}
           <button
             type="button"
             onClick={() => window.dispatchEvent(new CustomEvent('joke:regenerate'))}
-            className="col-span-2 sm:col-span-1 inline-flex items-center justify-center gap-1.5 py-2.5 sm:py-3 px-3 text-xs sm:text-sm font-bold
-                       bg-gradient-to-r from-orange-600/30 to-amber-600/30 border border-orange-500/40 rounded-xl
-                       text-orange-200 hover:text-white hover:border-orange-400 hover:bg-orange-500/25
-                       active:scale-[0.98] transition-all duration-150 cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono
+                       bg-zinc-800/70 border border-zinc-700/60 text-zinc-300 hover:text-white hover:bg-zinc-700
+                       transition-colors cursor-pointer"
           >
-            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            <span>Generate Again</span>
+            <RotateCcw className="w-3.5 h-3.5 text-zinc-400" />
+            <span>Regenerate</span>
           </button>
         </div>
       )}

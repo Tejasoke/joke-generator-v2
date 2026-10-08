@@ -13,20 +13,20 @@ export default function App() {
   const [topic,      setTopic]      = useState('')
   const [style,      setStyle]      = useState('Normal')
   const [strictMode, setStrictMode] = useState(false)
-  const [alert,      setAlert]      = useState(null)   // { type, message }
+  const [alert,      setAlert]      = useState(null)
 
-  const { streamingText, finalJoke, reaction, isLoading, error, startStream, reset } =
+  const { streamingText, finalJoke, isLoading, error, startStream, reset } =
     useJokeStream()
 
-  // Show backend errors as alerts
+  // Show backend errors cleanly
   useEffect(() => {
     if (error) {
       if (error.includes('Inappropriate')) {
-        setAlert({ type: 'error', message: 'Inappropriate topic detected. Try a different one.' })
+        setAlert({ type: 'error', message: 'Inappropriate topic detected. Please try another.' })
       } else if (error.includes('Could not generate')) {
-        setAlert({ type: 'warning', message: "Couldn't produce a good joke. Try a different topic or style!" })
+        setAlert({ type: 'warning', message: "Couldn't generate a suitable joke. Try a different topic or style." })
       } else {
-        setAlert({ type: 'error', message: `Error: ${error}` })
+        setAlert({ type: 'error', message: error })
       }
     }
   }, [error])
@@ -41,7 +41,7 @@ export default function App() {
     startStream({ topic: topic.trim(), style, strictMode })
   }, [topic, style, strictMode, startStream, reset])
 
-  // Listen for the "Again" custom event from JokeResult
+  // Listen for regenerate event
   useEffect(() => {
     const handler = () => handleGenerate()
     window.addEventListener('joke:regenerate', handler)
@@ -49,50 +49,35 @@ export default function App() {
   }, [handleGenerate])
 
   return (
-    <div className="min-h-screen bg-[#07070d] bg-grid-pattern relative overflow-x-hidden selection:bg-orange-500/30 selection:text-orange-200">
+    <div className="min-h-screen bg-[#09090b] text-zinc-100 relative antialiased selection:bg-zinc-800 selection:text-white">
 
-      {/* ── Ambient background glow (optimized for mobile) ── */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        <div className="absolute -top-32 -left-32 w-72 sm:w-[500px] h-72 sm:h-[500px] rounded-full
-                        bg-orange-600/15 blur-[80px] sm:blur-[100px]"
-             style={{ animation: 'float 14s ease-in-out infinite' }} />
-        <div className="absolute top-1/3 -right-32 w-64 sm:w-96 h-64 sm:h-96 rounded-full
-                        bg-purple-600/10 blur-[80px] sm:blur-[100px]"
-             style={{ animation: 'float 14s ease-in-out infinite 5s' }} />
-        <div className="absolute -bottom-20 left-1/4 w-60 sm:w-80 h-60 sm:h-80 rounded-full
-                        bg-amber-500/10 blur-[80px] sm:blur-[90px]"
-             style={{ animation: 'float 14s ease-in-out infinite 9s' }} />
-      </div>
-
-      {/* ── Page content ── */}
-      <main className="relative z-10 flex flex-col items-center
-                       px-3.5 sm:px-6 py-6 sm:py-14 pb-20 sm:pb-24 min-h-screen">
+      {/* Main Page Layout */}
+      <main className="relative z-10 flex flex-col items-center px-4 sm:px-6 py-10 sm:py-16 min-h-screen">
         <div className="w-full max-w-xl mx-auto">
 
           <Header />
 
-          {/* Alert with Lucide icon */}
+          {/* Clean Alert */}
           {alert && (
-            <div className={`mb-4 px-3.5 py-3 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-medium
-                             border flex items-center gap-2.5 backdrop-blur-md
+            <div className={`mb-4 px-3.5 py-2.5 rounded-xl text-xs font-mono
+                             border flex items-center gap-2.5
                              ${alert.type === 'error'
-                               ? 'bg-rose-500/10 border-rose-500/30 text-rose-300'
-                               : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+                               ? 'bg-rose-950/30 border-rose-800/50 text-rose-300'
+                               : 'bg-amber-950/30 border-amber-800/50 text-amber-300'
                              }`}
-                 style={{ animation: 'slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)' }}
                  role="alert">
               {alert.type === 'error' ? (
-                <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+                <AlertCircle className="w-3.5 h-3.5 shrink-0 text-rose-400" />
               ) : (
-                <AlertTriangle className="w-4 h-4 shrink-0 text-amber-400" />
+                <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-amber-400" />
               )}
               <span>{alert.message}</span>
             </div>
           )}
 
-          {/* Form card */}
-          <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.09]
-                          rounded-2xl sm:rounded-3xl p-4 sm:p-7 shadow-2xl shadow-black/70 mb-4 sm:mb-6">
+          {/* Main Card */}
+          <div className="bg-zinc-900/40 border border-zinc-800/80
+                          rounded-2xl p-5 sm:p-7 shadow-2xl backdrop-blur-sm mb-5">
             <TopicInput
               value={topic}
               onChange={setTopic}
@@ -115,17 +100,16 @@ export default function App() {
             />
           </div>
 
-          {/* Result */}
+          {/* Result Card */}
           <JokeResult
             streamingText={streamingText}
             finalJoke={finalJoke}
-            reaction={reaction}
             isLoading={isLoading}
           />
 
-          {/* Footer */}
-          <footer className="text-center mt-8 sm:mt-12 text-slate-500 text-[11px] sm:text-xs">
-            Powered by Fine-Tuned GPT-2 Medium · Served on Hugging Face ZeroGPU
+          {/* Minimalist Footer */}
+          <footer className="text-center mt-12 text-zinc-600 text-xs font-mono">
+            Fine-Tuned GPT-2 Medium · Hugging Face ZeroGPU
           </footer>
         </div>
       </main>
